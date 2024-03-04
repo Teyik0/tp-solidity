@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SmartBet is Ownable {
     constructor(address _initialOwner) Ownable(_initialOwner) {}
 
-    uint256 public entryFee;
+    uint256 public entryFee = 100;
 
     struct User {
         string name;
@@ -73,7 +73,7 @@ contract SmartBet is Ownable {
         uint256 _homeScore,
         uint256 _awayScore
     ) public payable onlyRegisteredUser {
-        require(msg.value >= entryFee, "Incorrect entry fee");
+        require(msg.value <= entryFee, "Incorrect entry fee");
         totalFundsCollectedPerMatch[_matchId] += msg.value;
         emit Participation(msg.sender, msg.value);
         _placeBet(_matchId, _homeScore, _awayScore);

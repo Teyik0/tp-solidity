@@ -4,6 +4,7 @@ import {
 } from '@nomicfoundation/hardhat-toolbox-viem/network-helpers';
 import { assert, expect } from 'chai';
 import hre from 'hardhat';
+import { parseEther } from 'viem';
 
 // A deployment function to set up the initial state
 const ownerAdress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
@@ -55,23 +56,24 @@ describe('SmarBet', function () {
 
   it('Should allow users to participate in a match', async function () {
     const smartBetContract = await loadFixture(deploy);
-    const matchId = 1;
-    const homeScore = 2;
-    const awayScore = 1;
-    const entryFee = 100; // adjust entry fee according to your requirements
+    const matchId: bigint = BigInt(1);
+    const homeScore: bigint = BigInt(2);
+    const awayScore: bigint = BigInt(1);
+
+    await smartBetContract.write.register([users[0].name], {
+      account: users[0].address as `0x${string}`,
+    });
+    const getUser = await smartBetContract.read.users([users[0].address]);
+    assert(getUser[2], 'User not registered');
 
     // Assuming the user is registered already
-    await smartBetContract.write.participate();
-
-    // const user = await smartBetContract.users(userAddress);
-    // assert(
-    //   user.bets[matchId].homeTeamScore === homeScore,
-    //   'Home team score not recorded'
-    // );
-    // assert(
-    //   user.bets[matchId].awayTeamScore === awayScore,
-    //   'Away team score not recorded'
-    // );
-    // Add more assertions as needed
+    const test = await smartBetContract.write.participate(
+      [matchId, homeScore, awayScore],
+      {
+        account: users[0].address as `0x${string}`,
+        amount: parseEther('101'),
+      }
+    );
+    console.log(test);
   });
 });
